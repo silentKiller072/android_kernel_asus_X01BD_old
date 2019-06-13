@@ -57,7 +57,7 @@
 #include "mdss_mdp.h"
 
 #ifdef CONFIG_KLAPSE
-#include "klapse.h"
+#include <linux/klapse.h>
 #endif
 
 #include <linux/wakelock.h>
