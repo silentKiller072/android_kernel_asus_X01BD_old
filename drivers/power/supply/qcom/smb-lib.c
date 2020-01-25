@@ -4005,10 +4005,11 @@ void jeita_rule(void)
 				}
 			else;
 
-			if(demo_chg_status == DEMO_CHG_THD)
-				demo_stop_charging_flag = false;
-			else
-				demo_stop_charging_flag = true;
+	}
+	if(bat_capacity == 100){
+		demo_stop_charging_flag = 1;
+	} else {
+		demo_stop_charging_flag = 0;
 	}
 
 	printk("%s: soc = %d, demo_flag = %d, stop_flag = %d \n",
