@@ -1774,18 +1774,22 @@ int ipa_q6_pipe_delay(bool zip_pipes)
 	/* For ZIP pipes, processing is done in AFTER_SHUTDOWN callback. */
 	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++) {
 		/* Skip the processing for non Q6 pipes. */
-		if (!IPA_CLIENT_IS_Q6_PROD(client_idx))
+		if (!IPA_CLIENT_IS_Q6_PROD(client_idx)) {
 			continue;
+		}
 		/* Skip the processing for NON-ZIP pipes. */
-		else if (zip_pipes && IPA_CLIENT_IS_Q6_NON_ZIP_PROD(client_idx))
+		else if (zip_pipes && IPA_CLIENT_IS_Q6_NON_ZIP_PROD(client_idx)) {
 			continue;
+		}
 		/* Skip the processing for ZIP pipes. */
-		else if (!zip_pipes && IPA_CLIENT_IS_Q6_ZIP_PROD(client_idx))
+		else if (!zip_pipes && IPA_CLIENT_IS_Q6_ZIP_PROD(client_idx)) {
 			continue;
+		}
 
 		ep_idx = ipa2_get_ep_mapping(client_idx);
-		if (ep_idx == -1)
+		if (ep_idx == -1) {
 			continue;
+		}
 
 		IPA_SETFIELD_IN_REG(reg_val, 1,
 			IPA_ENDP_INIT_CTRL_N_ENDP_DELAY_SHFT,
@@ -1807,12 +1811,14 @@ static void ipa_pipe_delay(bool set_reset)
 
 	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++) {
 		/* Break the processing for IPA PROD pipes and avoid looping. */
-		if (IPA_CLIENT_IS_CONS(client_idx))
+		if (IPA_CLIENT_IS_CONS(client_idx)) {
 			break;
+		}
 
 		ep_idx = ipa2_get_ep_mapping(client_idx);
-		if (ep_idx == -1)
+		if (ep_idx == -1) {
 			continue;
+		}
 
 		IPA_SETFIELD_IN_REG(reg_val, set_reset,
 			IPA_ENDP_INIT_CTRL_N_ENDP_DELAY_SHFT,
@@ -1832,8 +1838,9 @@ int ipa_q6_monitor_holb_mitigation(bool enable)
 	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++) {
 		if (IPA_CLIENT_IS_Q6_NON_ZIP_CONS(client_idx)) {
 			ep_idx = ipa2_get_ep_mapping(client_idx);
-			if (ep_idx == -1)
+			if (ep_idx == -1) {
 				continue;
+			}
 			/* Send a command to Uc to enable/disable
 			 * holb monitoring.
 			 */
@@ -1858,18 +1865,22 @@ static int ipa_q6_avoid_holb(bool zip_pipes)
 	/* For ZIP pipes, processing is done in AFTER_SHUTDOWN callback. */
 	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++) {
 		/* Skip the processing for non Q6 pipes. */
-		if (!IPA_CLIENT_IS_Q6_CONS(client_idx))
+		if (!IPA_CLIENT_IS_Q6_CONS(client_idx)) {
 			continue;
+		}
 		/* Skip the processing for NON-ZIP pipes. */
-		else if (zip_pipes && IPA_CLIENT_IS_Q6_NON_ZIP_CONS(client_idx))
+		else if (zip_pipes && IPA_CLIENT_IS_Q6_NON_ZIP_CONS(client_idx)) {
 			continue;
+		}
 		/* Skip the processing for ZIP pipes. */
-		else if (!zip_pipes && IPA_CLIENT_IS_Q6_ZIP_CONS(client_idx))
+		else if (!zip_pipes && IPA_CLIENT_IS_Q6_ZIP_CONS(client_idx)) {
 			continue;
+		}
 
 		ep_idx = ipa2_get_ep_mapping(client_idx);
-		if (ep_idx == -1)
+		if (ep_idx == -1) {
 			continue;
+		}
 
 		/*
 		 * ipa2_cfg_ep_holb is not used here because we are
@@ -2129,8 +2140,9 @@ static int ipa_q6_set_ex_path_dis_agg(void)
 	/* Set the exception path to AP */
 	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++) {
 		ep_idx = ipa2_get_ep_mapping(client_idx);
-		if (ep_idx == -1)
+		if (ep_idx == -1) {
 			continue;
+		}
 
 		if (ipa_ctx->ep[ep_idx].valid &&
 			ipa_ctx->ep[ep_idx].skip_ep_cfg) {
@@ -2164,8 +2176,9 @@ static int ipa_q6_set_ex_path_dis_agg(void)
 	/* Disable AGGR on IPA->Q6 pipes */
 	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++) {
 		ep_idx = ipa2_get_ep_mapping(client_idx);
-		if (ep_idx == -1)
+		if (ep_idx == -1) {
 			continue;
+		}
 		if (IPA_CLIENT_IS_Q6_NON_ZIP_CONS(client_idx) ||
 			IPA_CLIENT_IS_Q6_ZIP_CONS(client_idx)) {
 			reg_write = kzalloc(sizeof(*reg_write), flag);
@@ -2343,7 +2356,7 @@ int ioremap_non_ap_bam_regs(void)
 		return -ENODEV;
 	}
 
-	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++)
+	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++){
 		if (IPA_CLIENT_IS_Q6_NON_ZIP_CONS(client_idx) ||
 			IPA_CLIENT_IS_Q6_ZIP_CONS(client_idx) ||
 			IPA_CLIENT_IS_Q6_NON_ZIP_PROD(client_idx) ||
@@ -2351,8 +2364,9 @@ int ioremap_non_ap_bam_regs(void)
 
 			ep_idx = ipa2_get_ep_mapping(client_idx);
 
-			if (ep_idx == -1)
+			if (ep_idx == -1){
 				continue;
+			}
 
 			ipa_ctx->ipa_non_ap_bam_s_desc_iova[ep_idx] =
 				ioremap_sw_desc_ofst_bam_register(ep_idx);
@@ -2365,7 +2379,8 @@ int ioremap_non_ap_bam_regs(void)
 				return -ENOMEM;
 			}
 		}
-		return 0;
+	}
+	return 0;
 }
 
 /**
@@ -2384,7 +2399,7 @@ void iounmap_non_ap_bam_regs(void)
 		return;
 	}
 
-	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++)
+	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++){
 		if (IPA_CLIENT_IS_Q6_NON_ZIP_CONS(client_idx) ||
 			IPA_CLIENT_IS_Q6_ZIP_CONS(client_idx) ||
 			IPA_CLIENT_IS_Q6_NON_ZIP_PROD(client_idx) ||
@@ -2392,16 +2407,20 @@ void iounmap_non_ap_bam_regs(void)
 
 			ep_idx = ipa2_get_ep_mapping(client_idx);
 
-			if (ep_idx == -1)
+			if (ep_idx == -1){
 				continue;
+			}
 
-			if (ipa_ctx->ipa_non_ap_bam_s_desc_iova[ep_idx])
+			if (ipa_ctx->ipa_non_ap_bam_s_desc_iova[ep_idx]){
 				iounmap
 				(ipa_ctx->ipa_non_ap_bam_s_desc_iova[ep_idx]);
-			if (ipa_ctx->ipa_non_ap_bam_p_desc_iova[ep_idx])
+			}
+			if (ipa_ctx->ipa_non_ap_bam_p_desc_iova[ep_idx]){
 				iounmap
 				(ipa_ctx->ipa_non_ap_bam_p_desc_iova[ep_idx]);
+			}
 		}
+	}
 }
 
 /**
@@ -2532,7 +2551,7 @@ int ipa_q6_post_shutdown_cleanup(void)
 		return 0;
 	}
 
-	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++)
+	for (client_idx = 0; client_idx < IPA_CLIENT_MAX; client_idx++){
 		if (IPA_CLIENT_IS_Q6_NON_ZIP_CONS(client_idx) ||
 			IPA_CLIENT_IS_Q6_ZIP_CONS(client_idx) ||
 			IPA_CLIENT_IS_Q6_NON_ZIP_PROD(client_idx) ||
@@ -2545,14 +2564,17 @@ int ipa_q6_post_shutdown_cleanup(void)
 				 * before issue a reset
 				 */
 				res = wait_for_ep_empty(client_idx);
-				if (res)
+				if (res){
 					IPAERR("ep %d not empty\n",
 					ipa2_get_ep_mapping(client_idx));
+				}
 			}
 			res = ipa_uc_reset_pipe(client_idx);
-			if (res)
+			if (res){
 				BUG();
+			}
 		}
+	}
 	return 0;
 }
 

@@ -397,8 +397,9 @@ static bool __wcd9xxx_switch_micbias(struct wcd9xxx_mbhc *mbhc,
 		pr_debug("%s: VDDIO switch enabled\n", __func__);
 	} else if (!vddio_switch && mbhc->mbhc_micbias_switched) {
 		if ((!checkpolling || mbhc->polling_active) &&
-		    restartpolling)
+		    restartpolling){
 			wcd9xxx_pause_hs_polling(mbhc);
+			}
 
 			snd_soc_update_bits(codec, WCD9XXX_A_MAD_ANA_CTRL,
 					    0x10, 0x10);
@@ -454,8 +455,9 @@ static bool __wcd9xxx_switch_micbias(struct wcd9xxx_mbhc *mbhc,
 		snd_soc_update_bits(codec, mbhc->mbhc_bias_regs.mbhc_reg, 0x10,
 				    0x00);
 
-		if ((!checkpolling || mbhc->polling_active) && restartpolling)
+		if ((!checkpolling || mbhc->polling_active) && restartpolling){
 			wcd9xxx_start_hs_polling(mbhc);
+		}
 
 		mbhc->mbhc_micbias_switched = false;
 		pr_debug("%s: VDDIO switch disabled\n", __func__);

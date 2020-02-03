@@ -76,10 +76,11 @@ static int fb_notifier_callback(struct notifier_block *nb,
 		 * Switch back from anxiety to the original iosched after a delay
 		 * when the screen is turned on.
 		 */
-		if (delayed_work_pending(&sleep_sched))
+		if (delayed_work_pending(&sleep_sched)){
 			cancel_delayed_work_sync(&sleep_sched);
 			queue_delayed_work(system_power_efficient_wq, &restore_prev,
 				msecs_to_jiffies(RESTORE_DELAY_MS));
+		}
 		break;
 	default:
 		/*
@@ -87,10 +88,11 @@ static int fb_notifier_callback(struct notifier_block *nb,
 		 * the fb notifier chain call in case weird things can happen
 		 * when switching elevators while the screen is off.
 		 */
-		if (delayed_work_pending(&restore_prev))
+		if (delayed_work_pending(&restore_prev)){
 			cancel_delayed_work_sync(&restore_prev);
 			queue_delayed_work(system_power_efficient_wq, &sleep_sched,
 				msecs_to_jiffies(RESTORE_DELAY_MS));
+		}
 	}
 
 	return NOTIFY_OK;
