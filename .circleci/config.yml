@@ -10,6 +10,12 @@ jobs:
            git config --global user.name "ZyCromerZ"
            git config --global user.email "neetroid97@gmail.com"
            git clone https://github.com/akhilnarang/scripts scripts && cd scripts && bash setup/android_build_env.sh && cd ..
+           check=$(ls /usr/lib/x86_64-linux-gnu | grep libisl.so -m1)
+           if [ ! -z "$check" ];then
+              if[ "$check" != "libisl.so.15" ];then
+                  cp -af /usr/lib/x86_64-linux-gnu/$check /usr/lib/x86_64-linux-gnu/libisl.so.15
+              fi
+           fi
            mkdir prepare
            cd prepare
            wget https://github.com/ZyCromerZ/builder-kernel/raw/master/file.sh
