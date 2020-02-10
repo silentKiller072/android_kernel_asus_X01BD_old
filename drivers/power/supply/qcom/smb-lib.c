@@ -3515,7 +3515,7 @@ void asus_batt_RTC_work(struct work_struct *dat)
 #define ICL_1900mA	0x4C
 #define ICL_2000mA	0x50
 #define ICL_2850mA	0x72
-#define ICL_3000mA	0x78
+#define ICL_3000mA	0xF4
 #define ASUS_MONITOR_CYCLE		60000
 #define TITAN_750K_MIN	675
 #define TITAN_750K_MAX	851
@@ -3550,8 +3550,12 @@ void smblib_asus_monitor_start(struct smb_charger *chg, int time)
 #define SMBCHG_FLOAT_VOLTAGE_VALUE_4P064		0x4D
 #define SMBCHG_FLOAT_VOLTAGE_VALUE_4P350		0x73
 #define SMBCHG_FLOAT_VOLTAGE_VALUE_4P357		0x74
-#define SMBCHG_FLOAT_VOLTAGE_VALUE_4P385		0x78
-#define SMBCHG_FLOAT_VOLTAGE_VALUE_4P392		0x79
+#define SMBCHG_FLOAT_VOLTAGE_VALUE_4P364        0x75
+#define SMBCHG_FLOAT_VOLTAGE_VALUE_4P378        0x77
+#define SMBCHG_FLOAT_VOLTAGE_VALUE_4P385        0x78
+#define SMBCHG_FLOAT_VOLTAGE_VALUE_4P392        0x79
+#define SMBCHG_FLOAT_VOLTAGE_VALUE_4P399        0xF4
+#define SMBCHG_FLOAT_VOLTAGE_VALUE_4P413        0xF6
 #define SMBCHG_FAST_CHG_CURRENT_VALUE_850MA 	0x22
 /* Huaqin modify for ZQL1820-711 Set FCC as 925mA while battery temperature between 0 degree and 10 degree by gaochao at 2018/09/20 start */
 #define SMBCHG_FAST_CHG_CURRENT_VALUE_925MA 	0x25
@@ -3562,6 +3566,7 @@ void smblib_asus_monitor_start(struct smb_charger *chg, int time)
 #define SMBCHG_FAST_CHG_CURRENT_VALUE_2000MA 	0x50
 #define SMBCHG_FAST_CHG_CURRENT_VALUE_2050MA 	0x52
 #define SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA 	0x78
+#define SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA 	0xF4
 
 /* Huaqin modify for ZQL1820-HQ000002  Adjust JEITA according to customer require by gaochao at 2018/10/11 start */
 #define ASUS_CUSTOM_JEITA_SET_MODIFY
@@ -3630,27 +3635,31 @@ int smbchg_jeita_judge_state(int old_State, int batt_tempr)
 	/* Huaqin modify for ZQL1820-HQ000002  Adjust JEITA according to customer require by gaochao at 2018/10/11 start */
 	#if defined(ASUS_CUSTOM_JEITA_SET_MODIFY)
 	//10 <= batt_tempr < 45
-	} else if (batt_tempr < 450) {
+	} else if (batt_tempr < 550) {
 		result_State = JEITA_STATE_RANGE_100_to_450;
 	//45 <= batt_tempr < 55
-	} else if (batt_tempr < 550) {
+	// } else if (batt_tempr < 650) {
+	} else {
 		result_State = JEITA_STATE_RANGE_450_to_550;
-	//55 <= batt_tempr
-	} else{
-		result_State = JEITA_STATE_LARGER_THAN_550;
 	}
+	//55 <= batt_tempr
+	// } else{
+	// 	result_State = JEITA_STATE_LARGER_THAN_550;
+	// }
 
 	#else
 	//10 <= batt_tempr < 50
-	} else if (batt_tempr < 500) {
+	} else if (batt_tempr < 600) {
 		result_State = JEITA_STATE_RANGE_100_to_500;
 	//50 <= batt_tempr < 60
-	} else if (batt_tempr < 600) {
+	// } else if (batt_tempr < 700) {
+	} else {
 		result_State = JEITA_STATE_RANGE_500_to_600;
-	//60 <= batt_tempr
-	} else{
-		result_State = JEITA_STATE_LARGER_THAN_600;
 	}
+	//60 <= batt_tempr
+	// } else{
+	// 	result_State = JEITA_STATE_LARGER_THAN_600;
+	// }
 	#endif
 	/* Huaqin modify for ZQL1820-HQ000002  Adjust JEITA according to customer require by gaochao at 2018/10/11 end */
 
@@ -3673,11 +3682,11 @@ int smbchg_jeita_judge_state(int old_State, int batt_tempr)
 			result_State = old_State;
 		}
 	}
-	if (old_State == JEITA_STATE_LARGER_THAN_550 && result_State == JEITA_STATE_RANGE_450_to_550) {
-		if (batt_tempr >= 520) {
-			result_State = old_State;
-		}
-	}
+	// if (old_State == JEITA_STATE_LARGER_THAN_550 && result_State == JEITA_STATE_RANGE_450_to_550) {
+	// 	if (batt_tempr >= 520) {
+	// 		result_State = old_State;
+	// 	}
+	// }
 
 	#else
 	if (old_State == JEITA_STATE_RANGE_0_to_100 && result_State == JEITA_STATE_RANGE_100_to_500) {
@@ -3690,11 +3699,11 @@ int smbchg_jeita_judge_state(int old_State, int batt_tempr)
 			result_State = old_State;
 		}
 	}
-	if (old_State == JEITA_STATE_LARGER_THAN_600 && result_State == JEITA_STATE_RANGE_500_to_600) {
-		if (batt_tempr >= 570) {
-			result_State = old_State;
-		}
-	}
+	// if (old_State == JEITA_STATE_LARGER_THAN_600 && result_State == JEITA_STATE_RANGE_500_to_600) {
+	// 	if (batt_tempr >= 570) {
+	// 		result_State = old_State;
+	// 	}
+	// }
 	#endif
 	/* Huaqin modify for ZQL1820-HQ000002  Adjust JEITA according to customer require by gaochao at 2018/10/11 end */
 	printk("end smbchg_jeita_judge_state result_State=%d\n",result_State);
@@ -3872,12 +3881,12 @@ void jeita_rule(void)
 		break;
 	case JEITA_STATE_RANGE_0_to_100:
 		charging_enable = EN_BAT_CHG_EN_COMMAND_TRUE;
-		//FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P357;
-		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_850MA;
-		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P385;                   //reg=1070
+		//FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;
+		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;
+		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;                   //reg=1070
 		/* Huaqin modify for ZQL1820-711 Set FCC as 925mA while battery temperature between 0 degree and 10 degree by gaochao at 2018/09/20 start */
 		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_1400MA;                //reg=1061
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;		//FCC < 1000mA  10% accuracy
+		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;		//FCC < 1000mA  10% accuracy
 		/* Huaqin modify for ZQL1820-711 Set FCC as 925mA while battery temperature between 0 degree and 10 degree by gaochao at 2018/09/20 end */
 		printk("%s: 0 <= temperature < 10\n", __func__);
 		rc = SW_recharge(smbchg_dev);
@@ -3888,10 +3897,10 @@ void jeita_rule(void)
 #if 0
 	case JEITA_STATE_RANGE_100_to_200:
 		charging_enable = EN_BAT_CHG_EN_COMMAND_TRUE;
-		//FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P357;
-		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_1475MA;
-		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P385;                   //reg=1070
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;             //reg=1061
+		//FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;
+		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;
+		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;                   //reg=1070
+		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;             //reg=1061
 		printk("%s: 10 <= temperature < 20\n", __func__);
 		rc = SW_recharge(smbchg_dev);
 		if (rc < 0) {
@@ -3900,15 +3909,17 @@ void jeita_rule(void)
 		break;
 	case JEITA_STATE_RANGE_200_to_500:
 		charging_enable = EN_BAT_CHG_EN_COMMAND_TRUE;
-		if (bat_volt <= 4200000) {
-			FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P385;
-			FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;
-		} else {
-			FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P357;
-			FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2050MA;
-		}
-		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P385;
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;
+		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;
+		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;
+		// if (bat_volt <= 4200000) {
+		// 	FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;
+		// 	FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;
+		// } else {
+		// 	FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;
+		// 	FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;
+		// }
+		// FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P350;
+		// FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2000MA;
 		printk("%s: 20 <= temperature < 50\n", __func__);
 		rc = SW_recharge(smbchg_dev);
 		if (rc < 0) {
@@ -3925,12 +3936,12 @@ void jeita_rule(void)
 	/* Huaqin modify for ZQL1820-HQ000002  Adjust JEITA according to customer require by gaochao at 2018/10/11 end */
 
 		charging_enable = EN_BAT_CHG_EN_COMMAND_TRUE;
-		//FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P357;
-		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_1475MA;
-		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P385;                   //reg=1070
+		//FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;
+		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;
+		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;                   //reg=1070
 		/* Huaqin modify for ZQL1820-HQ000003  Set FCC as 2050mA to decrease charging time by gaochao at 2018/10/23 start */
-		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;             //reg=1061
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;
+		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;             //reg=1061
+		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;
 		/* Huaqin modify for ZQL1820-HQ000003  Set FCC as 2050mA to decrease charging time by gaochao at 2018/10/23 end */
 		printk("%s: 10 <= temperature < 45\n", __func__);
 		rc = SW_recharge(smbchg_dev);
@@ -3945,27 +3956,31 @@ void jeita_rule(void)
 	case JEITA_STATE_RANGE_500_to_600:
 	#endif
 	/* Huaqin modify for ZQL1820-HQ000002  Adjust JEITA according to customer require by gaochao at 2018/10/11 end */
-
+		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;
+		charging_enable = EN_BAT_CHG_EN_COMMAND_TRUE;
 #if 0
-		if (bat_volt >= 4100000 && FV_reg == 0x79) {
+		if (bat_volt >= 4100000 && FV_reg == 0xF6) {
 			charging_enable = EN_BAT_CHG_EN_COMMAND_FALSE;
-			FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P385;
+			FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P004;
 		} else {
 			charging_enable = EN_BAT_CHG_EN_COMMAND_TRUE;
-			FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P385;
+			FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;
 		}
 #endif
-		charging_enable = EN_BAT_CHG_EN_COMMAND_TRUE;
-		/* Huaqin modify for ZQL1820-1219 Set FV as 4095mV at factory mode to reduce charging time by gaochao at 2018/11/13 start */
-		#if defined(CONFIG_MACH_X01BD)
-		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P385;
-		#else
-		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P385;
-		#endif
+		// /* Huaqin modify for ZQL1820-1219 Set FV as 4095mV at factory mode to reduce charging time by gaochao at 2018/11/13 start */
+		// #if defined(CONFIG_MACH_X01BD)
+		// FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;
+		// #else
+		// FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P399;
+		// #endif
 		/* Huaqin modify for ZQL1820-1219 Set FV as 4095mV at factory mode to reduce charging time by gaochao at 2018/11/13 end */
 		/* Huaqin modify for ZQL1820-HQ000003  Set FCC as 2050mA to decrease charging time by gaochao at 2018/10/23 start */
-		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;
+		//FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;
+		if(charging_enable == EN_BAT_CHG_EN_COMMAND_FALSE){
+			FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_1475MA;
+		}else{ 
+			FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3010MA;
+		 }
 		/* Huaqin modify for ZQL1820-HQ000003  Set FCC as 2050mA to decrease charging time by gaochao at 2018/10/23 end */
 		printk("%s: 45 <= temperature < 55\n", __func__);
 		break;
@@ -4005,11 +4020,10 @@ void jeita_rule(void)
 				}
 			else;
 
-	}
-	if(bat_capacity == 100){
-		demo_stop_charging_flag = 1;
-	} else {
-		demo_stop_charging_flag = 0;
+			if(demo_chg_status == DEMO_CHG_THD)
+				demo_stop_charging_flag = 0;
+			else
+				demo_stop_charging_flag = 1;
 	}
 
 	printk("%s: soc = %d, demo_flag = %d, stop_flag = %d \n",
@@ -4018,9 +4032,12 @@ void jeita_rule(void)
 	if (smartchg_stop_flag || demo_stop_charging_flag) {
 		printk("%s: Stop charging, smart = %d, demo = %d\n", __func__, smartchg_stop_flag, demo_stop_charging_flag);
 		charging_enable = EN_BAT_CHG_EN_COMMAND_FALSE;
-	} else {
-		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P385;
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;
+	}
+	// fix stop charging
+	if (charging_enable == EN_BAT_CHG_EN_COMMAND_FALSE) {
+		charging_enable = EN_BAT_CHG_EN_COMMAND_FALSE;
+		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P004;
+		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_1475MA;
 	}
 /* Huaqin add for ZQL1650-26 by diganyun at 2018/02/06 end */
 
