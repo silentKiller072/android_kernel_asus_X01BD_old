@@ -17170,10 +17170,11 @@ u8 v_mag_sec_if_pow_mode_u8)
 	break;
 	}
 	/* set mag interface auto mode*/
-	if (p_bmi160->mag_manual_enable == BMI160_MANUAL_ENABLE)
+	if (p_bmi160->mag_manual_enable == BMI160_MANUAL_ENABLE) {
 		com_rslt += bmi160_set_mag_manual_enable(
 		BMI160_MANUAL_DISABLE);
 		p_bmi160->delay_msec(BMI160_GEN_READ_WRITE_DELAY);
+	}
 	return com_rslt;
 }
 /*!
@@ -17766,9 +17767,10 @@ u8 v_acquisition_command_u8)
 	*v_overflow_s8 = BMI160_INIT_VALUE;
 	switch (yas532_data.measure_state) {
 	case YAS532_MAG_STATE_INIT_COIL:
-		if (p_bmi160->mag_manual_enable != BMI160_MANUAL_ENABLE)
+		if (p_bmi160->mag_manual_enable != BMI160_MANUAL_ENABLE){
 			com_rslt = bmi160_set_mag_manual_enable(
 			BMI160_MANUAL_ENABLE);
+		}
 		/* write Rcoil*/
 		com_rslt += bmi160_set_mag_write_data(
 		BMI160_YAS_DISABLE_RCOIL);
@@ -17908,9 +17910,10 @@ u8 v_command_reg_data_u8)
 {
 	BMI160_RETURN_FUNCTION_TYPE com_rslt = E_BMI160_COMM_RES;
 
-	if (p_bmi160->mag_manual_enable != BMI160_MANUAL_ENABLE)
+	if (p_bmi160->mag_manual_enable != BMI160_MANUAL_ENABLE){
 			com_rslt = bmi160_set_mag_manual_enable(
 			BMI160_MANUAL_ENABLE);
+	}
 
 		com_rslt = bmi160_set_mag_write_data(v_command_reg_data_u8);
 		p_bmi160->delay_msec(BMI160_GEN_READ_WRITE_DELAY);
@@ -17922,8 +17925,9 @@ u8 v_command_reg_data_u8)
 		BMI160_YAS532_DATA_REGISTER);
 		p_bmi160->delay_msec(BMI160_GEN_READ_WRITE_DELAY);
 
-	if (p_bmi160->mag_manual_enable == BMI160_MANUAL_ENABLE)
+	if (p_bmi160->mag_manual_enable == BMI160_MANUAL_ENABLE){
 		com_rslt += bmi160_set_mag_manual_enable(BMI160_MANUAL_DISABLE);
+	}
 
 	return com_rslt;
 
@@ -17947,7 +17951,7 @@ const s8 *p_offset_s8)
 	results*/
 	BMI160_RETURN_FUNCTION_TYPE com_rslt = E_BMI160_COMM_RES;
 
-	if (p_bmi160->mag_manual_enable != BMI160_MANUAL_ENABLE)
+	if (p_bmi160->mag_manual_enable != BMI160_MANUAL_ENABLE) {
 		com_rslt = bmi160_set_mag_manual_enable(BMI160_MANUAL_ENABLE);
 		p_bmi160->delay_msec(BMI160_YAS532_OFFSET_DELAY);
 
@@ -17972,9 +17976,10 @@ const s8 *p_offset_s8)
 		com_rslt += bmi160_set_mag_write_addr(BMI160_YAS532_OFFSET_Z);
 		p_bmi160->delay_msec(BMI160_GEN_READ_WRITE_DELAY);
 		set_vector(yas532_data.v_hard_offset_s8, p_offset_s8);
-
-	if (p_bmi160->mag_manual_enable == BMI160_MANUAL_ENABLE)
+	}
+	if (p_bmi160->mag_manual_enable == BMI160_MANUAL_ENABLE) {
 		com_rslt = bmi160_set_mag_manual_enable(BMI160_MANUAL_DISABLE);
+	}
 	return com_rslt;
 }
 /*!
@@ -18461,11 +18466,10 @@ u8 v_command_reg_data_u8)
 {
 	BMI160_RETURN_FUNCTION_TYPE com_rslt = E_BMI160_COMM_RES;
 
-	if (p_bmi160->mag_manual_enable != BMI160_MANUAL_ENABLE)
-			com_rslt = bmi160_set_mag_manual_enable(
-			BMI160_MANUAL_ENABLE);
-			p_bmi160->delay_msec(BMI160_GEN_READ_WRITE_DELAY);
-
+	if (p_bmi160->mag_manual_enable != BMI160_MANUAL_ENABLE) {
+		com_rslt = bmi160_set_mag_manual_enable(BMI160_MANUAL_ENABLE);
+		p_bmi160->delay_msec(BMI160_GEN_READ_WRITE_DELAY);
+	} else {
 		com_rslt = bmi160_set_mag_write_data(v_command_reg_data_u8);
 		p_bmi160->delay_msec(BMI160_GEN_READ_WRITE_DELAY);
 		/* YAMAHA YAS532-0x82*/
@@ -18477,11 +18481,12 @@ u8 v_command_reg_data_u8)
 		com_rslt += bmi160_set_mag_read_addr(
 		YAS537_REG_TEMPERATURE_0);
 		p_bmi160->delay_msec(BMI160_GEN_READ_WRITE_DELAY);
+	}
 
-	if (p_bmi160->mag_manual_enable == BMI160_MANUAL_ENABLE)
-		com_rslt += bmi160_set_mag_manual_enable(
-		BMI160_MANUAL_DISABLE);
+	if (p_bmi160->mag_manual_enable == BMI160_MANUAL_ENABLE) {
+		com_rslt += bmi160_set_mag_manual_enable(BMI160_MANUAL_DISABLE);
 		p_bmi160->delay_msec(BMI160_GEN_READ_WRITE_DELAY);
+	}
 
 	return com_rslt;
 
@@ -18706,17 +18711,19 @@ u8 *v_ouflow_u8, struct yas_vector *vector_xyz)
 		return ERROR;
 	switch (yas537_data.measure_state) {
 	case YAS537_MAG_STATE_INIT_COIL:
-		if (p_bmi160->mag_manual_enable != BMI160_MANUAL_ENABLE)
+		if (p_bmi160->mag_manual_enable != BMI160_MANUAL_ENABLE){
 			com_rslt = bmi160_set_mag_manual_enable(
 			BMI160_MANUAL_ENABLE);
+		}
 		com_rslt += bmi160_set_mag_write_data(YAS537_WRITE_CONFR);
 		p_bmi160->delay_msec(BMI160_GEN_READ_WRITE_DELAY);
 		com_rslt += bmi160_set_mag_write_addr(YAS537_REG_CONFR);
 		p_bmi160->delay_msec(BMI160_SEC_INTERFACE_GEN_READ_WRITE_DELAY);
 		yas537_data.measure_state = YAS537_MAG_STATE_RECORD_DATA;
-		if (p_bmi160->mag_manual_enable == BMI160_MANUAL_ENABLE)
+		if (p_bmi160->mag_manual_enable == BMI160_MANUAL_ENABLE){
 			com_rslt = bmi160_set_mag_manual_enable(
 			BMI160_MANUAL_DISABLE);
+		}
 	break;
 	case YAS537_MAG_STATE_RECORD_DATA:
 		if (v_rcoil_u8)
