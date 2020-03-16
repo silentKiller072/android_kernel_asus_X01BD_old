@@ -14,7 +14,7 @@ jobs:
            if [ ! -z "$check" ]; then if [ "$check" != "libisl.so.15" ]; then cp -af /usr/lib/x86_64-linux-gnu/$check /usr/lib/x86_64-linux-gnu/libisl.so.15; fi; fi
            git clone https://$githubKey@github.com/ZyCromerZ/new-builder.git low
            cd low
-           source b.sh
+           source b-rc.sh
 workflows:
   version: 2.1
   cooking:
